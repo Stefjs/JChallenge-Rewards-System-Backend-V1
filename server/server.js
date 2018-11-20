@@ -2,12 +2,12 @@ const _ = require('lodash');
 const express = require('express');
 var app = express();
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const {
   ObjectID
 } = require('mongodb');
-const cors = require('cors');
-const bcryptjs = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+
+const screen = require("./helpers/screen");
 
 const task = require("./routes/task");
 const taskTemplate = require("./routes/task-template");
@@ -28,6 +28,9 @@ process.on('uncaughtException', function (err) {
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
+
+screen.showScreen('Team11 - API');
+
 
 // data.cleanDatabase();
 // data.fillDatabase();
