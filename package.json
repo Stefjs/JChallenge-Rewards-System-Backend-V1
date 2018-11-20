@@ -1,0 +1,22 @@
+{
+  "name": "todo-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.5",
+    "express": "^4.16.4",
+    "fs": "0.0.1-security",
+    "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.11",
+    "mongodb": "^2.2.36",
+    "mongoose": "^5.3.12"
+  }
+}
