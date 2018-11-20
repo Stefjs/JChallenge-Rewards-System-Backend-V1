@@ -1,6 +1,13 @@
 # JChallenge-Rewards-System-Backend-V1
 Repository for JavaChallenge 19/11 - 30/11 - Team 11 - Backend - V1
 
+  _____                    _ _              _    ____ ___
+ |_   _|__  __ _ _ __ ___ / / |            / \  |  _ \_ _|
+   | |/ _ \/ _` | '_ ` _ \| | |  _____    / _ \ | |_) | |
+   | |  __/ (_| | | | | | | | | |_____|  / ___ \|  __/| |
+   |_|\___|\__,_|_| |_| |_|_|_|         /_/   \_\_|  |___|
+
+
 Routes documentation:
 
 Reward
