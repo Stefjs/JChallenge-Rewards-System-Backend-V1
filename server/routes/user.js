@@ -19,34 +19,24 @@ var {
 
 app.post('/v1/user/login', (req, res) => {
   var password = req.body.password;
+  var email = req.body.email;
+
   User.findOne({
-    email: req.body.email
-  }, function (err, user) {
-    if (err) {
-      res.status(400).send({
-        message: 'Foute login'
-      });
-    }
-    if (user) {
-      var valid = bcryptjs.compareSync(password, user.password);
-      if (valid) {
-        user.token = tokenHelper.generateToken(user);
-        user.save();
-        return res.status(200).send({
-          _id: user._id,
-          email: user.email,
-          name: user.name,
-          type: user.type,
-          points: user.points,
-          token: user.token
-        });
-      }
-    } else {
-      res.status(400).send({
-        message: 'Foute login'
-      });
-    }
-  });
+    email: email
+  })
+  .then((user) => {
+    if (!user) {return res.status(400).send({message: 'Foute login'})};
+    var valid = bcryptjs.compareSync(password, user.password);
+    if (!valid) {return res.status(400).send({message: 'Foute login'})};
+    return res.status(200).send({
+      _id: user._id,
+      email: user.email,
+      name: user.name,
+      type: user.type,
+      points: user.points,
+      token: user.token
+    }); 
+  })
 });
 
 app.put('/v1/user/reward', (req, res) => {
@@ -56,24 +46,17 @@ app.put('/v1/user/reward', (req, res) => {
     description: req.body.description
   });
 
-  if (!req.body.token) {
-    return res.status(400).send({
-      message: 'Foute login'
-    });
-  }
-
+  if (!req.body.token) {return res.status(400).send({message: 'Foute login'});}
   reward.save().then((reward) => {
-    User.findOne({
-        token: req.body.token
-      }).then((user) => {
+    if (!reward) {return res.status(400).send({message: 'Reward niet toegevoegd'});}
+    User.findOne({token: req.body.token})
+      .then((user) => {
+        if (!user) {return res.status(400).send({message: 'Foute login'});}
         user.rewards.push(reward._id);
         user.save();
+        res.status(200).send({message: 'Reward toegevoegd', rewardId: reward._id});
       })
-      .then(() => res.status(200).send({
-        message: 'Reward toegevoegd',
-        rewardId: reward._id
-      }));
-  });
+  })
 });
 
 app.put('/v1/user/task', (req, res) => {
@@ -83,260 +66,154 @@ app.put('/v1/user/task', (req, res) => {
     description: req.body.description
   });
 
-  if (!req.body.token) {
-    return res.status(400).send({
-      message: 'Foute login'
-    });
-  }
-
+  if (!req.body.token) {return res.status(400).send({message: 'Foute login'});}
   task.save().then((task) => {
-    User.findOne({
-        token: req.body.token
-      }).then((user) => {
+    User.findOne({token: req.body.token})
+      .then((user) => {
         user.tasks.push(task._id);
         user.save();
-      })
-      .then(() => res.status(200).send({
-        message: 'Task toegevoegd',
-        taskId: task._id
-      }));
-  });
+        res.status(200).send({message: 'Task toegevoegd',taskId: task._id});
+      });
+  })
 });
 
 app.patch('/v1/user/task/accept', (req, res) => {
   var taskId = req.body.taskId;
-  if (!ObjectID.isValid(taskId)) {
-    return res.status(404).send();
-  }
+  var token = req.body.token;
 
-  if (!req.body.token) {
-    return res.status(400).send({
-      message: 'Foute login'
-    });
-  }
+  if (!ObjectID.isValid(taskId)) {return res.status(400).send({message: 'Foute taskId'});}
 
-  User.findOne({
-    token: req.body.token
-  }).then((user) => {
+  User.findOne({token: token}).then((user) => {
+    if (!user) {return res.status(400).send({message: 'Foute login'});}
+    if (user.type !== 'admin') {return res.status(400).send({message: 'U bent niet bevoegd om deze actie uit te voeren'});}
 
-    if (!user) {
-      return res.status(400).send({
-      message: 'Foute login'
-    });}
-
-    if (user.type === 'admin') {
-      Task.findById(taskId).then((task) => {
-        if (task && task.acccept != true) {
-          task.accepted = true;
-          task.save();
-
-          User.findOne({
-            tasks: task._id
-          }).then((user) => {
-            user.points = user.points + task.points;
-            user.save();
-          });  
-
-          return res.status(200).send({
-            message: 'Task is geaccepteerd'
+    Task.findById(taskId).then((task) => {
+      if (!task || task.accepted === true) {return res.status(400).send({message: 'Geen task om te accepteren'});}
+      task.accepted = true;
+      task.save()
+      .then((task) => {
+        User.findOne({tasks: task._id})
+        .then((user) => {
+          if (!user) {return res.status(400).send({message: 'Geen task om te accepteren'});}
+          user.points = user.points + task.points;
+          user.save()
+          .then(() => {return res.status(400).send({message: 'Task is geaccepteerd'});
           });
-        } else {
-          return res.status(400).send({
-            message: 'Task niet gevonden'
-          });
-        }
-      }).catch((e) => {
-        return res.status(400).send({
-          message: 'Er is iets mis gegaan'
         });
       });
-    } else {
-      return res.status(400).send({
-        message: 'Foute login'
-      });
-    }
-  })
+    });
+  });
 });
 
 app.patch('/v1/user/reward/accept', (req, res) => {
   var rewardId = req.body.rewardId;
-  if (!ObjectID.isValid(rewardId)) {
-    return res.status(400).send();
-  }
+  var token = req.body.token;
 
-  if (!req.body.token) {
-    return res.status(400).send({
-      message: 'Foute login'
-    });
-  }
+  if (!ObjectID.isValid(rewardId)) {return res.status(400).send({message: 'Foute rewardId'});}
 
-  User.findOne({
-    token: req.body.token
-  }).then((user) => {
+  User.findOne({token: token}).then((user) => {
+    if (!user) {return res.status(400).send({message: 'Foute login'});}
+    if (user.type !== 'admin') {return res.status(400).send({message: 'U bent niet bevoegd om deze actie uit te voeren'});}
 
-    if (!user) {
-      return res.status(400).send({
-      message: 'Foute login'
-    });}
-
-    if (user.type === 'admin') {
-      Reward.findById(rewardId).then((reward) => {
-        if (reward && reward.accept != true) {
-          reward.accepted = true;
-          reward.save();
-
-        User.findOne({
-          rewards: reward._id
-        }).then((user) => {
+    Reward.findById(rewardId).then((reward) => {
+      if (!reward || reward.accepted === true) {return res.status(400).send({message: 'Geen reward om te accepteren'});}
+      reward.accepted = true;
+      reward.save()
+      .then((reward) => {
+        User.findOne({rewards: reward._id})
+        .then((user) => {
+          if (!user) {return res.status(400).send({message: 'Geen reward om te accepteren'});}
+          if (user.points < reward.points) {return res.status(400).send({message: 'Niet genoeg punten'});}
           user.points = user.points - reward.points;
-          user.save();
-        });  
-
-          return res.status(200).send({
-            message: 'Reward is geaccepteerd'
+          user.save()
+          .then(() => {return res.status(400).send({message: 'Reward is geaccepteerd'});
           });
-        } else {
-          return res.status(400).send({
-            message: 'Reward niet gevonden'
-          });
-        }
-      }).catch((e) => {
-        return res.status(400).send({
-          message: 'Er is iets mis gegaan'
         });
       });
-    } else {
-      return res.status(400).send({
-        message: 'Foute login'
-      });
-    }
-  })
+    });
+  });
 });
 
 app.get('/v1/user/:token/tasks', (req, res) => {
-  if (!req.params.token) {
-    return res.status(400).send({
-      message: 'Foute login'
-    });
-  }
-  User.findOne({
-    token: req.params.token
-  }, function (err, user) {
-    if (user) {
-      var ids = idHelper.convertToObjectIds(user.tasks);
-      Task.find({
-        '_id': {
-          $in: ids
-        }
-      }, function (err, tasks) {
-        return res.status(200).send(tasks);
-      });
-    } else {
-      return res.status(400).send({
-        message: 'Foute login'
-      });
-    }
-  }).catch((e) => {
-    return res.status(400).send({
-      message: 'Er is iets mis gegaan'
+  var token = req.params.token;
+
+  if (!token) {return res.status(400).send({message: 'Foute login'});}
+  User.findOne({token: token})
+  .then((user) => {
+    if (!user) {return res.status(400).send({message: 'Foute login'});}
+    var ids = idHelper.convertToObjectIds(user.tasks);
+    Task.find({'_id': {$in: ids}})
+    .then((tasks) => {
+      if (!tasks || tasks.length === 0) {return res.status(400).send({message: 'Geen tasks gevonden'});}
+      {return res.status(400).send(tasks);}
     });
   });
 });
 
 app.get('/v1/user/:token/rewards', (req, res) => {
-  if (!req.params.token) {
-    return res.status(400).send({
-      message: 'Foute login'
-    });
-  }
-  User.findOne({
-    token: req.params.token
-  }, function (err, user) {
-    if (user) {
-      var ids = idHelper.convertToObjectIds(user.rewards);
-      Reward.find({
-        '_id': {
-          $in: ids
-        }
-      }, function (err, rewards) {
-        return res.status(200).send(rewards);
-      });
-    } else {
-      return res.status(400).send({
-        message: 'Foute login'
-      });
-    }
-  }).catch((e) => {
-    return res.status(400).send({
-      message: 'Er is iets mis gegaan'
+  var token = req.params.token;
+
+  if (!token) {return res.status(400).send({message: 'Foute login'});}
+  User.findOne({token: token})
+  .then((user) => {
+    if (!user) {return res.status(400).send({message: 'Foute login'});}
+    var ids = idHelper.convertToObjectIds(user.rewards);
+    Reward.find({'_id': {$in: ids}})
+    .then((rewards) => {
+      if (!rewards || rewards.length === 0) {return res.status(400).send({message: 'Geen rewards gevonden'});}
+      {return res.status(400).send(rewards);}
     });
   });
 });
 
 app.get('/v1/users/rewards', (req, res) => {
   var allData = [];
-  
-  User.find({'type': 'worker'}).then((users) => {
-    var counter = 0;
-    users.forEach(function(user) {
 
-      if (user.rewards.length != 0) {
-        var data = {
-          user: '',
-          rewards: []
-        };
-  
-        data.user = user.name;
-        
-        Reward.find({
-          '_id': {
-            $in: user.rewards
-          }
-        }).then((rewards) => {
-          data.rewards.push(rewards);
+  User.find({'type': 'worker'})
+  .then((users) => {
+    var counter = 0;
+    Promise.all(
+      users.map((user) => {
+        if (user.rewards.length !== 0) {
+          var data = {user: '', rewards: []};
+          data.user = user.name;
+          Reward.find({'_id': {$in: user.rewards}})
+          .then((rewards) => {
+            data.rewards.push(rewards);
+            counter++;
+            if (counter === users.length) {return res.status(200).send(allData)}
+          });
+          allData.push(data);
+        } else {
           counter++;
-          if(counter === users.length) {
-            return res.send(allData);
-          }
-        });
-        allData.push(data);
-      } else {
-        counter++;
-      }
-  });
-  });
+        }
+      })
+    )
+  })
 });
 
 app.get('/v1/users/tasks', (req, res) => {
   var allData = [];
-  
-  User.find({'type': 'worker'}).then((users) => {
-    var counter = 0;
-    users.forEach(function(user) {
 
-      if (user.tasks.length != 0) {
-        var data = {
-          user: '',
-          tasks: []
-        };
-  
-        data.user = user.name;
-        
-        Task.find({
-          '_id': {
-            $in: user.tasks
-          }
-        }).then((tasks) => {
-          data.tasks.push(tasks);
+  User.find({'type': 'worker'})
+  .then((users) => {
+    var counter = 0;
+    Promise.all(
+      users.map((user) => {
+        if (user.tasks.length !== 0) {
+          var data = {user: '', tasks: []};
+          data.user = user.name;
+          Task.find({'_id': {$in: user.tasks}})
+          .then((tasks) => {
+            data.tasks.push(tasks);
+            counter++;
+            if (counter === users.length) {return res.status(200).send(allData)}
+          });
+          allData.push(data);
+        } else {
           counter++;
-          if(counter === users.length) {
-            return res.send(allData);
-          }
-        });
-        allData.push(data);
-      } else {
-        counter++;
-      }
-  });
-  });
+        }
+      })
+    )
+  })
 });
