@@ -11,75 +11,39 @@ var {
 
 app.get('/v1/rewards/templates', (req, res) => {
   RewardTemplate.find().then((rewards) => {
+    if (!rewards || rewards.length === 0) {return res.status(400).send({message: 'Geen reward templates gevonden'});}
     return res.status(200).send(rewards);
-  }, (e) => {
-    return res.status(400).send(e);
   });
 });
 
 app.get('/v1/reward/template/:id', (req, res) => {
-  RewardTemplate.findById(req.params.id).then((reward) => {
-    if (reward) {
-      return res.status(200).send(reward);
-    } else {
-      return res.status(400).send({
-        message: 'Geen reward template gevonden'
-      });
-    }
-  }, (e) => {
-    return res.status(400).send({
-      message: 'Er is iets mis gegaan'
-    });
+  var id = req.params.id;
+  RewardTemplate.findById(id).then((reward) => {
+    if (!reward) {return res.status(400).send({message: 'Geen reward templates gevonden'});}
+    return res.status(200).send(reward);
   });
 });
 
 app.delete('/v1/reward/template/:id', (req, res) => {
-  RewardTemplate.findByIdAndDelete(req.params.id).then(() => {
-    return res.status(200).send({
-      message: 'Reward template verwijderd'
-    });
-  }, (e) => {
-    return res.status(400).send({
-      message: 'Er is iets mis gegaan'
-    });
+  var id = req.params.id;
+  RewardTemplate.findByIdAndDelete(id).then((reward) => {
+    if (!reward) {return res.status(400).send({message: 'Geen reward template gevonden'});}
+    return res.status(400).send({message: 'Reward template verwijderd'});
   });
 });
 
 app.post('/v1/reward/template/add', (req, res) => {
+  var token = req.body.token;
   var reward = new RewardTemplate({
     title: req.body.title,
     points: req.body.points,
     description: req.body.description
   });
 
-  if (!req.body.token) {
-    return res.status(400).send({
-      message: 'Foute login'
-    });
-  }
-
-  User.findOne({
-    token: req.body.token
-  }).then((user) => {
-
-    if (!user) {
-        return res.status(400).send({
-        message: 'Foute login'
-    });}
-
-    if (user.type === 'admin') {
-      reward.save().then((doc) => {
-        return res.status(200).send(doc);
-      }, (e) => {
-        return res.status(400).send({
-          message: 'Er is iets mis gegaan'
-        });
-      });
-    } else {
-      return res.status(400).send({
-        message: 'Foute login'
-      });
-    }
-
+  if (!req.body.token) {return res.status(400).send({message: 'Foute login'});}
+  User.findOne({token: token}).then((user) => {
+    if (!user || user.type !== 'admin') {return res.status(400).send({message: 'Foute login'});}
+    reward.save()
+    .then((reward) => {return res.status(200).send(reward)});
   });
 });

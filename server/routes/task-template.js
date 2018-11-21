@@ -11,71 +11,39 @@ var {
 
 app.get('/v1/tasks/templates', (req, res) => {
   TaskTemplate.find().then((tasks) => {
+    if (!tasks || tasks.length === 0) {return res.status(400).send({message: 'Geen task templates gevonden'});}
     return res.status(200).send(tasks);
-  }, (e) => {
-    return res.status(400).send(e);
   });
 });
 
-app.get('/v1/task/template/:id', (req, res) => {
-  TaskTemplate.findById(req.params.id).then((task) => {
-    if (task) {
-      return res.status(200).send(task);
-    } else {
-      return res.status(400).send({
-        message: 'Geen task template gevonden'
-      });
-    }
-  }, (e) => {
-    return res.status(400).send(e);
+app.get('/v1/tasks/template/:id', (req, res) => {
+  var id = req.params.id;
+  TaskTemplate.findById(id).then((tasks) => {
+    if (!tasks) {return res.status(400).send({message: 'Geen tasks templates gevonden'});}
+    return res.status(200).send(tasks);
   });
 });
 
-app.delete('/v1/task/template/:id', (req, res) => {
-  TaskTemplate.findByIdAndDelete(req.params.id).then(() => {
-    return res.status(200).send({
-      message: 'Task template verwijderd'
-    });
-  }, (e) => {
-    return res.status(400).send(e);
+app.delete('/v1/tasks/template/:id', (req, res) => {
+  var id = req.params.id;
+  TaskTemplate.findByIdAndDelete(id).then((tasks) => {
+    if (!tasks) {return res.status(400).send({message: 'Geen task template gevonden'});}
+    return res.status(400).send({message: 'Task template verwijderd'});
   });
 });
 
 app.post('/v1/task/template/add', (req, res) => {
+  var token = req.body.token;
   var task = new TaskTemplate({
     title: req.body.title,
     points: req.body.points,
     description: req.body.description
   });
 
-  if (!req.body.token) {
-    return res.status(400).send({
-      message: 'Foute login'
-    });
-  }
-
-  User.findOne({
-    token: req.body.token
-  }).then((user) => {
-
-    if (!user) {
-      return res.status(400).send({
-      message: 'Foute login'
-    });}
-
-    if (user.type === 'admin') {
-      task.save().then((doc) => {
-        return res.status(200).send(doc);
-      }, (e) => {
-        return res.status(400).send({
-          message: 'Er is iets mis gegaan'
-        });
-      });
-    } else {
-      return res.status(400).send({
-        message: 'Foute login'
-      });
-    }
-
+  if (!req.body.token) {return res.status(400).send({message: 'Foute login'});}
+  User.findOne({token: token}).then((user) => {
+    if (!user || user.type !== 'admin') {return res.status(400).send({message: 'Foute login'});}
+    task.save()
+    .then((task) => {return res.status(200).send(task)});
   });
 });
