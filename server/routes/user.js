@@ -254,7 +254,7 @@ app.get('/v1/user/:token/rewards', (req, res) => {
   }, function (err, user) {
     if (user) {
       var ids = idHelper.convertToObjectIds(user.rewards);
-      Task.find({
+      Reward.find({
         '_id': {
           $in: ids
         }
