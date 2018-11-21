@@ -1,7 +1,5 @@
 var mongoose = require('mongoose');
 var {User} = require('../models/user');
-var {Task} = require('../models/task');
-var {Reward} = require('../models/reward');
 var {TaskTemplate} = require('../models/task-template');
 var {RewardTemplate} = require('../models/reward-template');
 const bcryptjs = require('bcryptjs');
@@ -82,31 +80,15 @@ var userData = {
   }
 }
 
-var cleanDatabase = () => {
-  User.deleteMany({}, function(err) { 
-    if (err) throw err;
-  });
-  Task.deleteMany({}, function(err) { 
-    if (err) throw err;
-  });
-  Reward.deleteMany({}, function(err) { 
-    if (err) throw err;
-  });
-  TaskTemplate.deleteMany({}, function(err) { 
-    if (err) throw err;
-  });
-  RewardTemplate.deleteMany({}, function(err) { 
-    if (err) throw err;
-  });
-}
-
 var fillDatabase = () => {
-  insertAdminData();
-  insertRewardTemplateData();
-  insertTaskTemplateData();
-  insertUserData();
+  return new Promise((resolve, reject) => {
+    insertAdminData();
+    insertRewardTemplateData();
+    insertTaskTemplateData();
+    insertUserData();
+    return resolve();
+  });
 }
-
 
 var insertAdminData = () => {
   var admin = new User({
@@ -174,6 +156,5 @@ var insertRewardTemplateData = () => {
 }
 
 module.exports = {
-  cleanDatabase,
   fillDatabase
 };

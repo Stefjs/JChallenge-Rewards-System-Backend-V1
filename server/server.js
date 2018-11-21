@@ -7,13 +7,16 @@ const {
   ObjectID
 } = require('mongodb');
 
-const screen = require("./helpers/screen");
+const screen = require('./helpers/screen');
 
-const task = require("./routes/task");
-const taskTemplate = require("./routes/task-template");
-const reward = require("./routes/reward");
-const rewardTemplate = require("./routes/reward-template");
-const user = require("./routes/user");
+const task = require('./routes/task');
+const taskTemplate = require('./routes/task-template');
+const reward = require('./routes/reward');
+const rewardTemplate = require('./routes/reward-template');
+const user = require('./routes/user');
+
+const cleaner = require('./data/clean-database');
+const filler = require('./data/fill-database')
 
 const port = process.env.PORT || 3000;
 
@@ -25,12 +28,14 @@ process.on('uncaughtException', function (err) {
   console.log('Caught exception: ', err);
 });
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
-
-screen.showScreen('Team11 - API');
-
+cleaner.cleanDatabase()
+  .then(() => filler.fillDatabase())
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`Listening on port ${port}`);
+    });
+    screen.showScreen('Team11 - API');
+  })
 
 // data.cleanDatabase();
 // data.fillDatabase();
