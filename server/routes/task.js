@@ -9,49 +9,72 @@ var {
   User
 } = require('../models/user');
 
-app.post('/v1/task/add', (req, res) => {
-  var task = new Task({
-    title: req.body.title,
-    points: req.body.points,
-    description: req.body.description
-  });
+// app.post('/v1/task/add', (req, res) => {
+//   var task = new Task({
+//     title: req.body.title,
+//     points: req.body.points,
+//     description: req.body.description
+//   });
 
-  if (!req.body.token) {
-    return res.status(400).send({
-      message: 'Foute login'
-    });
-  }
+//   if (!req.body.token) {
+//     return res.status(400).send({
+//       message: 'Foute login'
+//     });
+//   }
 
-  User.findOne({
-    token: req.body.token
-  }).then((user) => {
+//   User.findOne({
+//     token: req.body.token
+//   }).then((user) => {
 
-    if (user.type === 'admin') {
-      task.save().then((doc) => {
-        return res.status(200).send(doc);
-      }, (e) => {
-        res.status(400).send({
-          message: 'Er is iets mis gegaan'
-        });
-      });
-    } else {
-      res.status(400).send({
-        message: 'Foute login'
-      });
-    }
-  });
-});
+//     if (user.type === 'admin') {
+//       task.save().then((doc) => {
+//         return res.status(200).send(doc);
+//       }, (e) => {
+//         res.status(400).send({
+//           message: 'Er is iets mis gegaan'
+//         });
+//       });
+//     } else {
+//       res.status(400).send({
+//         message: 'Foute login'
+//       });
+//     }
+//   });
+// });
 
 app.get('/v1/tasks', (req, res) => {
-  Task.find().then((tasks) => {
-    return res.status(200).send(
+  Task.find({accepted: false}).then((tasks) => {
+
+    if(tasks.length === 0) {
+      return res.status(400).send({
+        message: 'Geen tasks gevonden die moeten goedgekeurd worden'
+      });
+    }
+
+    console.log(tasks[0]._id);
+
+    User.findOne({
+      rewards: tasks[0]._id
+    }).then((user) => {
+      console.log(user);
+      if(!user) {
+        return res.status(400).send({
+          message: 'Geen tasks gevonden die moeten goedgekeurd worden'
+        });
+      }
+
+     return res.status(200).send({
+      name: user.name,
       tasks
-    );
+     });
+    });  
   }, (e) => {
-    res.status(400).send({
+    return res.status(400).send({
       message: 'Er is iets mis gegaan'
     });
   });
+
+  
 });
 
 app.get('/v1/tasks/feed/:limit', (req, res) => {

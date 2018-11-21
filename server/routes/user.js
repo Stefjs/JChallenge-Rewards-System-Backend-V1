@@ -272,3 +272,71 @@ app.get('/v1/user/:token/rewards', (req, res) => {
     });
   });
 });
+
+app.get('/v1/users/rewards', (req, res) => {
+  var allData = [];
+  
+  User.find({'type': 'worker'}).then((users) => {
+    var counter = 0;
+    users.forEach(function(user) {
+
+      if (user.rewards.length != 0) {
+        var data = {
+          user: '',
+          rewards: []
+        };
+  
+        data.user = user.name;
+        
+        Reward.find({
+          '_id': {
+            $in: user.rewards
+          }
+        }).then((rewards) => {
+          data.rewards.push(rewards);
+          counter++;
+          if(counter === users.length) {
+            return res.send(allData);
+          }
+        });
+        allData.push(data);
+      } else {
+        counter++;
+      }
+  });
+  });
+});
+
+app.get('/v1/users/tasks', (req, res) => {
+  var allData = [];
+  
+  User.find({'type': 'worker'}).then((users) => {
+    var counter = 0;
+    users.forEach(function(user) {
+
+      if (user.tasks.length != 0) {
+        var data = {
+          user: '',
+          tasks: []
+        };
+  
+        data.user = user.name;
+        
+        Task.find({
+          '_id': {
+            $in: user.tasks
+          }
+        }).then((tasks) => {
+          data.tasks.push(tasks);
+          counter++;
+          if(counter === users.length) {
+            return res.send(allData);
+          }
+        });
+        allData.push(data);
+      } else {
+        counter++;
+      }
+  });
+  });
+});
