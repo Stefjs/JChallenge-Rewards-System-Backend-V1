@@ -15,6 +15,12 @@ const reward = require('./routes/reward');
 const rewardTemplate = require('./routes/reward-template');
 const user = require('./routes/user');
 
+const optionDefinitions = [
+  { name: 'clean', alias: 'c', type: Boolean }
+]
+const commandLineArgs = require('command-line-args')
+const options = commandLineArgs(optionDefinitions)
+
 const cleaner = require('./data/clean-database');
 const filler = require('./data/fill-database')
 
@@ -28,14 +34,21 @@ process.on('uncaughtException', function (err) {
   console.log('Caught exception: ', err);
 });
 
-cleaner.cleanDatabase()
+var onStartup = () => {
+  app.listen(port, () => {
+    console.log(`Listening on port ${port}`);
+  });
+  screen.showScreen('Team11 - API');
+}
+
+if(options.clean === true) {
+  console.log('Restoring database')
+  cleaner.cleanDatabase()
   .then(() => filler.fillDatabase())
   .then(() => {
-    app.listen(port, () => {
-      console.log(`Listening on port ${port}`);
-    });
-    screen.showScreen('Team11 - API');
-  })
+    return onStartup();
+  });
+} else {
+  return onStartup();
+}
 
-// data.cleanDatabase();
-// data.fillDatabase();

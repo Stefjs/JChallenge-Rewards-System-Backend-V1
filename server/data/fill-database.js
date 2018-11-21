@@ -8,27 +8,27 @@ var taskTemplateData = {
   'blogpost-template': {
     'title': 'Blogpost schrijven',
     'points': '1',
-    'descripton': ''
+    'description': 'Schrijf een blogpost over wat je geprogrammeerd hebt'
   },
   'presentation-template': {
     'title': 'Presentatie geven',
     'points': '5',
-    'descripton': ''
+    'description': 'Geef een presentatie voor een publiek'
   },
   'technology-template': {
     'title': 'Nieuwe technologie onderzoeken',
     'points': '10',
-    'descripton': ''
+    'description': 'De wereld is steeds aan het inoveren'
   },
   'conference-template': {
     'title': 'Bijwonen van een conferentie',
     'points': '10',
-    'descripton': ''
+    'description': 'Vergaderen met een ruim publiek'
   },
   'meetup-template': {
     'title': 'Naar een meetup gaan',
     'points': '5',
-    'descripton': ''
+    'description': 'Leer nieuwe mensen kennen'
   }
 }
 
@@ -36,22 +36,22 @@ var rewardTemplateData = {
   'beer-template': {
     'title': 'Een bak bier',
     'points': '15',
-    'descripton': 'Grote dorst?'
+    'description': 'Grote dorst?'
   },
   'bol-template': {
     'title': 'Bol.com bon van 25 euro',
     'points': '5',
-    'descripton': 'Goed shoppen'
+    'description': 'Goed shoppen'
   },
   'champagne-template': {
     'title': 'Een fles champagne',
     'points': '30',
-    'descripton': 'Dorst?'
+    'description': 'Dorst?'
   },
   'arube-template': {
     'title': 'Een reis naar Aruba',
     'points': '3000',
-    'descripton': 'Lekker zonnen'
+    'description': 'Lekker zonnen'
   }
 }
 
