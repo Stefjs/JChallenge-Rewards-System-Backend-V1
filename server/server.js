@@ -3,10 +3,6 @@ const express = require('express');
 var app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const {
-  ObjectID
-} = require('mongodb');
-
 const screen = require('./helpers/screen');
 
 const task = require('./routes/task');
