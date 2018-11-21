@@ -30,7 +30,8 @@ var userSchema = Schema ({
   },
   points: {
     type: Number,
-    required: false
+    required: true,
+    default: 0
   },
   tasks: [{type: Schema.Types.ObjectId, ref: 'Task' }],
   rewards: [{type: Schema.Types.ObjectId, ref: 'Reward' }]

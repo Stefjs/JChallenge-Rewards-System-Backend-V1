@@ -93,7 +93,7 @@ app.put('/v1/user/task', (req, res) => {
     User.findOne({
         token: req.body.token
       }).then((user) => {
-        user.rewards.push(task._id);
+        user.tasks.push(task._id);
         user.save();
       })
       .then(() => res.status(200).send({
@@ -126,9 +126,17 @@ app.patch('/v1/user/task/accept', (req, res) => {
 
     if (user.type === 'admin') {
       Task.findById(taskId).then((task) => {
-        if (task) {
+        if (task && task.acccept != true) {
           task.accepted = true;
           task.save();
+
+          User.findOne({
+            tasks: task._id
+          }).then((user) => {
+            user.points = user.points + task.points;
+            user.save();
+          });  
+
           return res.status(200).send({
             message: 'Task is geaccepteerd'
           });
@@ -173,9 +181,17 @@ app.patch('/v1/user/reward/accept', (req, res) => {
 
     if (user.type === 'admin') {
       Reward.findById(rewardId).then((reward) => {
-        if (reward) {
+        if (reward && reward.accept != true) {
           reward.accepted = true;
           reward.save();
+
+        User.findOne({
+          rewards: reward._id
+        }).then((user) => {
+          user.points = user.points - reward.points;
+          user.save();
+        });  
+
           return res.status(200).send({
             message: 'Reward is geaccepteerd'
           });
