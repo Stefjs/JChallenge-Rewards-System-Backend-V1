@@ -16,15 +16,15 @@ app.get('/v1/tasks/templates', (req, res) => {
   });
 });
 
-app.get('/v1/tasks/template/:id', (req, res) => {
+app.get('/v1/task/template/:id', (req, res) => {
   var id = req.params.id;
   TaskTemplate.findById(id).then((tasks) => {
-    if (!tasks) {return res.status(400).send({message: 'Geen tasks templates gevonden'});}
+    if (!tasks) {return res.status(400).send({message: 'Geen task template gevonden'});}
     return res.status(200).send(tasks);
   });
 });
 
-app.delete('/v1/tasks/template/:id', (req, res) => {
+app.delete('/v1/task/template/:id', (req, res) => {
   var id = req.params.id;
   TaskTemplate.findByIdAndDelete(id).then((tasks) => {
     if (!tasks) {return res.status(400).send({message: 'Geen task template gevonden'});}

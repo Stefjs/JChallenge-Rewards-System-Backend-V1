@@ -55,6 +55,7 @@ app.put('/v1/user/reward', (req, res) => {
     User.findOne({token: req.body.token})
       .then((user) => {
         if (!user) {return res.status(400).send({message: 'Foute login'});}
+        if (user.points < reward.points) {return res.status(400).send({message: 'Niet genoeg punten'});}
         user.rewards.push(reward._id);
         user.save();
         res.status(200).send({message: 'Reward toegevoegd', rewardId: reward._id});
