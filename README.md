@@ -1,7 +1,7 @@
 # JChallenge-Rewards-System-Backend-V1
 Repository for JavaChallenge 19/11 - 30/11 - Team 11 - Backend - V1
 
-Routes documentation (NOT COMPLETED, MIGHT HAVE MISTAKES):
+Routes documentation:
 
 Reward
 https://documenter.getpostman.com/view/5923294/RzZFCG6Y
