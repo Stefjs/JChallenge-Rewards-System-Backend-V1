@@ -14,6 +14,6 @@ app.get('/v1/rewards/feed/:limit', (req, res) => {
     Reward.find({accepted: true}).sort({_id: '-1'}).limit(parseInt(limit))
     .then((rewards) => {
     if (!rewards || rewards.length === 0) {return res.status(400).send({message: 'Geen rewards gevonden'});}
-        return res.status(400).send(rewards);
+        return res.status(200).send(rewards);
     });
 });
