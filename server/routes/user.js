@@ -17,6 +17,13 @@ var {
   Reward
 } = require('../models/reward');
 
+
+app.get('/test', (req, res) => {
+  console.log(req.headers);
+  var token = req.headers['authorization'];
+  console.log(token);
+});
+
 app.post('/v1/user/login', (req, res) => {
   var password = req.body.password;
   var email = req.body.email;
@@ -42,17 +49,18 @@ app.post('/v1/user/login', (req, res) => {
   });
 });
 
-app.put('/v1/user/reward', (req, res) => {
+app.put('/v1/user/reward/add', (req, res) => {
+  var token = req.headers['authorization'];
   var reward = new Reward({
     title: req.body.title,
     points: req.body.points,
     description: req.body.description
   });
 
-  if (!req.body.token) {return res.status(400).send({message: 'Foute login'});}
+  if (!token) {return res.status(400).send({message: 'Foute login'});}
   reward.save().then((reward) => {
     if (!reward) {return res.status(400).send({message: 'Reward niet toegevoegd'});}
-    User.findOne({token: req.body.token})
+    User.findOne({token: token})
       .then((user) => {
         if (!user) {return res.status(400).send({message: 'Foute login'});}
         if (user.points < reward.points) {return res.status(400).send({message: 'Niet genoeg punten'});}
@@ -63,16 +71,17 @@ app.put('/v1/user/reward', (req, res) => {
   })
 });
 
-app.put('/v1/user/task', (req, res) => {
+app.put('/v1/user/task/add', (req, res) => {
+  var token = req.headers['authorization'];
   var task = new Task({
     title: req.body.title,
     points: req.body.points,
     description: req.body.description
   });
 
-  if (!req.body.token) {return res.status(400).send({message: 'Foute login'});}
+  if (!token) {return res.status(400).send({message: 'Foute login'});}
   task.save().then((task) => {
-    User.findOne({token: req.body.token})
+    User.findOne({token: token})
       .then((user) => {
         user.tasks.push(task._id);
         user.save();
@@ -83,7 +92,7 @@ app.put('/v1/user/task', (req, res) => {
 
 app.patch('/v1/user/task/accept', (req, res) => {
   var taskId = req.body.taskId;
-  var token = req.body.token;
+  var token = req.headers['authorization'];
 
   if (!ObjectID.isValid(taskId)) {return res.status(400).send({message: 'Foute taskId'});}
 
@@ -111,7 +120,7 @@ app.patch('/v1/user/task/accept', (req, res) => {
 
 app.patch('/v1/user/reward/accept', (req, res) => {
   var rewardId = req.body.rewardId;
-  var token = req.body.token;
+  var token = req.headers['authorization'];
 
   if (!ObjectID.isValid(rewardId)) {return res.status(400).send({message: 'Foute rewardId'});}
 
@@ -138,8 +147,8 @@ app.patch('/v1/user/reward/accept', (req, res) => {
   });
 });
 
-app.get('/v1/user/:token/tasks', (req, res) => {
-  var token = req.params.token;
+app.get('/v1/user/tasks', (req, res) => {
+  var token = req.headers['authorization'];
 
   if (!token) {return res.status(400).send({message: 'Foute login'});}
   User.findOne({token: token})
@@ -154,8 +163,8 @@ app.get('/v1/user/:token/tasks', (req, res) => {
   });
 });
 
-app.get('/v1/user/:token/rewards', (req, res) => {
-  var token = req.params.token;
+app.get('/v1/user/rewards', (req, res) => {
+  var token = req.headers['authorization'];
 
   if (!token) {return res.status(400).send({message: 'Foute login'});}
   User.findOne({token: token})

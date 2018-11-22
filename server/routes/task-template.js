@@ -33,14 +33,14 @@ app.delete('/v1/task/template/:id', (req, res) => {
 });
 
 app.post('/v1/task/template/add', (req, res) => {
-  var token = req.body.token;
+  var token = req.headers['authorization'];
   var task = new TaskTemplate({
     title: req.body.title,
     points: req.body.points,
     description: req.body.description
   });
 
-  if (!req.body.token) {return res.status(400).send({message: 'Foute login'});}
+  if (!token) {return res.status(400).send({message: 'Foute login'});}
   User.findOne({token: token}).then((user) => {
     if (!user || user.type !== 'admin') {return res.status(400).send({message: 'Foute login'});}
     task.save()

@@ -33,14 +33,14 @@ app.delete('/v1/reward/template/:id', (req, res) => {
 });
 
 app.post('/v1/reward/template/add', (req, res) => {
-  var token = req.body.token;
+  var token = req.headers['authorization'];
   var reward = new RewardTemplate({
     title: req.body.title,
     points: req.body.points,
     description: req.body.description
   });
 
-  if (!req.body.token) {return res.status(400).send({message: 'Foute login'});}
+  if (!token) {return res.status(400).send({message: 'Foute login'});}
   User.findOne({token: token}).then((user) => {
     if (!user || user.type !== 'admin') {return res.status(400).send({message: 'Foute login'});}
     reward.save()
