@@ -28,15 +28,18 @@ app.post('/v1/user/login', (req, res) => {
     if (!user) {return res.status(400).send({message: 'Foute login'})};
     var valid = bcryptjs.compareSync(password, user.password);
     if (!valid) {return res.status(400).send({message: 'Foute login'})};
-    return res.status(200).send({
-      _id: user._id,
-      email: user.email,
-      name: user.name,
-      type: user.type,
-      points: user.points,
-      token: user.token
-    }); 
-  })
+    user.token = tokenHelper.generateToken(user);
+    user.save().then(()=> {
+      return res.status(200).send({
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        type: user.type,
+        points: user.points,
+        token: user.token
+      }); 
+    });
+  });
 });
 
 app.put('/v1/user/reward', (req, res) => {
