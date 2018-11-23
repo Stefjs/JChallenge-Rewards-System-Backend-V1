@@ -44,7 +44,7 @@ app.post('/v1/task/template/add', (req, res) => {
   User.findOne({token: token}).then((user) => {
     if (!user || user.type !== 'admin') {return res.status(400).send({message: 'Foute login'});}
     task.save()
-    .then((task) => {return res.status(200).send({message: 'Reward template aangemaakt'});}
+    .then((task) => {return res.status(200).send({message: 'Task template toegevoegd'})});
   });
 });
 
