@@ -44,7 +44,7 @@ app.post('/v1/task/template/add', (req, res) => {
   User.findOne({token: token}).then((user) => {
     if (!user || user.type !== 'admin') {return res.status(400).send({message: 'Foute login'});}
     task.save()
-    .then((task) => {return res.status(200).send(task)});
+    .then((task) => {return res.status(200).send({message: 'Reward template aangemaakt'});}
   });
 });
 
@@ -65,7 +65,7 @@ app.put('/v1/task/template/:id', (req, res) => {
       task.points = points;
       task.description = description;
       task.save().then((task) => {
-        return res.status(200).send({message: 'Reward template geupdate'});
+        return res.status(200).send({message: 'Task template geupdate'});
       });
     });
   });
