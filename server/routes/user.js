@@ -17,13 +17,6 @@ var {
   Reward
 } = require('../models/reward');
 
-
-app.get('/test', (req, res) => {
-  console.log(req.headers);
-  var token = req.headers['authorization'];
-  console.log(token);
-});
-
 app.post('/v1/user/login', (req, res) => {
   var password = req.body.password;
   var email = req.body.email;
@@ -36,6 +29,7 @@ app.post('/v1/user/login', (req, res) => {
     var valid = bcryptjs.compareSync(password, user.password);
     if (!valid) {return res.status(400).send({message: 'Foute login'})};
     user.token = tokenHelper.generateToken(user);
+    console.log(user.token);
     user.save().then(() => {
       return res.status(200).send({
         _id: user._id,

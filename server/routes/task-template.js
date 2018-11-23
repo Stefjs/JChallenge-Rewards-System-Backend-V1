@@ -47,3 +47,26 @@ app.post('/v1/task/template/add', (req, res) => {
     .then((task) => {return res.status(200).send(task)});
   });
 });
+
+app.update('/v1/task/template/:id', (req, res) => {
+  var token = req.headers['authorization'];
+  var title = req.body.title;
+  var points = req.body.points;
+  var description = req.body.description;
+  var id = req.params.id;
+
+  if (!token) {return res.status(400).send({message: 'Foute login'});}
+  User.findOne({token: token}).then((user) => {
+    if (!user || user.type !== 'admin') {return res.status(400).send({message: 'Foute login'});}
+  }).then(() => {
+    TaskTemplate.findById(id).then((task) => {
+      if (!task) {return res.status(400).send({message: 'Geen reward template gevonden'});}
+      task.title = title;
+      task.points = points;
+      task.description = description;
+      task.save().then((task) => {
+        return res.status(200).send(task);
+      });
+    });
+  });
+});
