@@ -28,7 +28,8 @@ app.delete('/v1/reward/template/:id', (req, res) => {
   var id = req.params.id;
   RewardTemplate.findByIdAndDelete(id).then((reward) => {
     if (!reward) {return res.status(400).send({message: 'Geen reward template gevonden'});}
-    return res.status(400).send({message: 'Reward template verwijderd'});
+      console.log(reward);
+    return res.status(200).send({message: 'Reward template verwijderd'});
   });
 });
 
