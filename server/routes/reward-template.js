@@ -66,7 +66,7 @@ app.put('/v1/reward/template/:id', (req, res) => {
       reward.points = points;
       reward.description = description;
       reward.save().then((reward) => {
-        return res.status(200).send(reward);
+        return res.status(200).send({message: 'Reward template geupdate'});
       });
     });
   });

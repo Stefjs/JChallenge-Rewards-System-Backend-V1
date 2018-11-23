@@ -65,7 +65,7 @@ app.put('/v1/task/template/:id', (req, res) => {
       task.points = points;
       task.description = description;
       task.save().then((task) => {
-        return res.status(200).send(task);
+        return res.status(200).send({message: 'Reward template geupdate'});
       });
     });
   });
