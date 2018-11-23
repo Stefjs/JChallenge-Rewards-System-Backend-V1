@@ -48,7 +48,7 @@ app.post('/v1/task/template/add', (req, res) => {
   });
 });
 
-app.update('/v1/task/template/:id', (req, res) => {
+app.put('/v1/task/template/:id', (req, res) => {
   var token = req.headers['authorization'];
   var title = req.body.title;
   var points = req.body.points;

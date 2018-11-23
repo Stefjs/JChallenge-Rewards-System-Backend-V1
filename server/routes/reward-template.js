@@ -49,7 +49,7 @@ app.post('/v1/reward/template/add', (req, res) => {
   });
 });
 
-app.update('/v1/reward/template/:id', (req, res) => {
+app.put('/v1/reward/template/:id', (req, res) => {
   var token = req.headers['authorization'];
   var title = req.body.title;
   var points = req.body.points;
