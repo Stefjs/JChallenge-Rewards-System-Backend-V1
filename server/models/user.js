@@ -34,7 +34,8 @@ var userSchema = Schema ({
     default: 0
   },
   tasks: [{type: Schema.Types.ObjectId, ref: 'Task' }],
-  rewards: [{type: Schema.Types.ObjectId, ref: 'Reward' }]
+  rewards: [{type: Schema.Types.ObjectId, ref: 'Reward' }],
+  target: {type: Schema.Types.ObjectId, ref: 'Reward' }
 });
 
 var User = mongoose.model('User', userSchema);

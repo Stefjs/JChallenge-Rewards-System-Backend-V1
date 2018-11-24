@@ -1,11 +1,11 @@
 const express = require('express');
-const app = (module.exports = express());
+var router = express.Router();
 const {
   ObjectID
 } = require('mongodb');
 const bcryptjs = require('bcryptjs');
 const tokenHelper = require('../helpers/token');
-const idHelper = require('../helpers/id')
+const idHelper = require('../helpers/id');
 
 var {
   Task
@@ -16,8 +16,12 @@ var {
 var {
   Reward
 } = require('../models/reward');
+var {
+  RewardTemplate
+} = require('../models/reward-template');
 
-app.post('/v1/user/login', (req, res) => {
+
+router.post('/v1/user/login', (req, res) => {
   var password = req.body.password;
   var email = req.body.email;
 
@@ -29,7 +33,6 @@ app.post('/v1/user/login', (req, res) => {
     var valid = bcryptjs.compareSync(password, user.password);
     if (!valid) {return res.status(400).send({message: 'Foute login'})};
     user.token = tokenHelper.generateToken(user);
-    console.log(user.token);
     user.save().then(() => {
       return res.status(200).send({
         _id: user._id,
@@ -43,7 +46,7 @@ app.post('/v1/user/login', (req, res) => {
   });
 });
 
-app.put('/v1/user/reward/add', (req, res) => {
+router.put('/v1/user/reward/add', (req, res) => {
   var token = req.headers['authorization'];
   var reward = new Reward({
     title: req.body.title,
@@ -65,7 +68,7 @@ app.put('/v1/user/reward/add', (req, res) => {
   })
 });
 
-app.put('/v1/user/task/add', (req, res) => {
+router.put('/v1/user/task/add', (req, res) => {
   var token = req.headers['authorization'];
   var task = new Task({
     title: req.body.title,
@@ -84,7 +87,7 @@ app.put('/v1/user/task/add', (req, res) => {
   })
 });
 
-app.patch('/v1/user/task/accept', (req, res) => {
+router.patch('/v1/user/task/accept', (req, res) => {
   var taskId = req.body.taskId;
   var token = req.headers['authorization'];
 
@@ -112,7 +115,7 @@ app.patch('/v1/user/task/accept', (req, res) => {
   });
 });
 
-app.patch('/v1/user/reward/accept', (req, res) => {
+router.patch('/v1/user/reward/accept', (req, res) => {
   var rewardId = req.body.rewardId;
   var token = req.headers['authorization'];
 
@@ -141,7 +144,7 @@ app.patch('/v1/user/reward/accept', (req, res) => {
   });
 });
 
-app.get('/v1/user/tasks', (req, res) => {
+router.get('/v1/user/tasks', (req, res) => {
   var token = req.headers['authorization'];
 
   if (!token) {return res.status(400).send({message: 'Foute login'});}
@@ -157,7 +160,7 @@ app.get('/v1/user/tasks', (req, res) => {
   });
 });
 
-app.get('/v1/user/rewards', (req, res) => {
+router.get('/v1/user/rewards', (req, res) => {
   var token = req.headers['authorization'];
 
   if (!token) {return res.status(400).send({message: 'Foute login'});}
@@ -173,7 +176,7 @@ app.get('/v1/user/rewards', (req, res) => {
   });
 });
 
-app.get('/v1/users/rewards', (req, res) => {
+router.get('/v1/users/rewards', (req, res) => {
   var allData = [];
 
   User.find({'type': 'worker'})
@@ -199,7 +202,7 @@ app.get('/v1/users/rewards', (req, res) => {
   })
 });
 
-app.get('/v1/users/tasks', (req, res) => {
+router.get('/v1/users/tasks', (req, res) => {
   var allData = [];
 
   User.find({'type': 'worker'})
@@ -224,3 +227,38 @@ app.get('/v1/users/tasks', (req, res) => {
     )
   })
 });
+
+router.get('/v1/user/target', (req, res) => {
+  var token = req.headers['authorization'];
+
+  User.findOne({token: token})
+  .then((user) => {
+    if (!user) {return res.status(400).send({message: 'Foute login'});}
+    RewardTemplate.findById(user.target)
+    .then((reward) => {
+      if (!reward) {return res.status(400).send({message: 'Geen target gevonden'});}
+      return res.status(200).send({title: reward.title, target: reward.points});
+    });
+  });
+});
+
+router.post('/v1/user/target', (req, res) => {
+  var token = req.headers['authorization'];
+  var rewardId = req.body.rewardId;
+
+  User.findOne({token: token})
+  .then((user) => {
+    if (!user) {return res.status(400).send({message: 'Foute login'});}
+    RewardTemplate.findById(rewardId)
+    .then((target) => {
+      if (!target) {return res.status(400).send({message: 'Geen reward gevonden voor target'});}
+      user.target = target._id;
+      user.save()
+      .then(() => {
+        return res.status(200).send({message: 'Target toegevoegd'});
+      });
+    });
+  });
+});
+
+module.exports = router;

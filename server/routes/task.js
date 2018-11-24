@@ -1,11 +1,11 @@
 const express = require('express');
-const app = (module.exports = express());
+var router = express.Router();
 
 var {
   Task
 } = require('../models/task');
 
-app.get('/v1/tasks/feed/:limit', (req, res) => {
+router.get('/v1/tasks/feed/:limit', (req, res) => {
   var limit = req.params.limit;
 
   if (!parseInt(limit)) {limit = 3;}
@@ -15,3 +15,5 @@ app.get('/v1/tasks/feed/:limit', (req, res) => {
     return res.status(200).send(tasks);
   });
 });
+
+module.exports = router;

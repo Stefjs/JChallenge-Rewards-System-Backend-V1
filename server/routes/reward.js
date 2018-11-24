@@ -1,13 +1,12 @@
 const express = require('express');
-const app = (module.exports = express());
-
+var router = express.Router();
 const idHelper = require('../helpers/id')
 
 var {
     Reward
 } = require('../models/reward');
 
-app.get('/v1/rewards/feed/:limit', (req, res) => {
+router.get('/v1/rewards/feed/:limit', (req, res) => {
     var limit = req.params.limit;
   
     if (!parseInt(limit)) {limit = 3;}
@@ -17,3 +16,5 @@ app.get('/v1/rewards/feed/:limit', (req, res) => {
         return res.status(200).send(rewards);
     });
 });
+
+module.exports = router;
