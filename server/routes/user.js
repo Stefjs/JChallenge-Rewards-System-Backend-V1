@@ -1,5 +1,7 @@
 const express = require('express');
 var router = express.Router();
+var message = require('../helpers/message');
+
 const {
   ObjectID
 } = require('mongodb');
@@ -27,11 +29,10 @@ router.post('/v1/user/login', (req, res) => {
 
   User.findOne({
     email: email
-  })
-  .then((user) => {
-    if (!user) {return res.status(400).send({message: 'Foute login'})};
+  }).then((user) => {
+    if (!user) {return res.status(400).send({message: message.wrongLogin})};
     var valid = bcryptjs.compareSync(password, user.password);
-    if (!valid) {return res.status(400).send({message: 'Foute login'})};
+    if (!valid) {return res.status(400).send({message: message.wrongLogin})};
     user.token = tokenHelper.generateToken(user);
     user.save().then(() => {
       return res.status(200).send({
@@ -40,7 +41,8 @@ router.post('/v1/user/login', (req, res) => {
         name: user.name,
         type: user.type,
         points: user.points,
-        token: user.token
+        token: user.token,
+        target: user.target
       }); 
     });
   });
@@ -54,7 +56,7 @@ router.put('/v1/user/reward/add', (req, res) => {
     description: req.body.description
   });
 
-  if (!token) {return res.status(400).send({message: 'Foute login'});}
+  if (!token) {return res.status(400).send({message: message.wrongLogin});}
   reward.save().then((reward) => {
     if (!reward) {return res.status(400).send({message: 'Reward niet toegevoegd'});}
     User.findOne({token: token})
@@ -199,7 +201,7 @@ router.get('/v1/users/rewards', (req, res) => {
         }
       })
     )
-  })
+  });
 });
 
 router.get('/v1/users/tasks', (req, res) => {
@@ -236,7 +238,7 @@ router.get('/v1/user/target', (req, res) => {
     if (!user) {return res.status(400).send({message: 'Foute login'});}
     RewardTemplate.findById(user.target)
     .then((reward) => {
-      if (!reward) {return res.status(400).send({message: 'Geen target gevonden'});}
+      if (!reward) {return res.status(200).send({message: 'Geen target gevonden'});}
       return res.status(200).send({title: reward.title, target: reward.points});
     });
   });
@@ -251,7 +253,7 @@ router.post('/v1/user/target', (req, res) => {
     if (!user) {return res.status(400).send({message: 'Foute login'});}
     RewardTemplate.findById(rewardId)
     .then((target) => {
-      if (!target) {return res.status(400).send({message: 'Geen reward gevonden voor target'});}
+      if (!target) {return res.status(200).send({message: 'Geen reward gevonden voor target'});}
       user.target = target._id;
       user.save()
       .then(() => {

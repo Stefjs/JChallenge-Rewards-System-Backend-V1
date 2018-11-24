@@ -1,6 +1,6 @@
 const express = require('express');
 var router = express.Router();
-const idHelper = require('../helpers/id')
+var message = require('../helpers/message');
 
 var {
     Reward
@@ -12,7 +12,7 @@ router.get('/v1/rewards/feed/:limit', (req, res) => {
     if (!parseInt(limit)) {limit = 3;}
     Reward.find({accepted: true}).sort({_id: '-1'}).limit(parseInt(limit))
     .then((rewards) => {
-    if (!rewards || rewards.length === 0) {return res.status(400).send({message: 'Geen rewards gevonden'});}
+    if (!rewards || rewards.length === 0) {return res.status(400).send({message: message.noRewards});}
         return res.status(200).send(rewards);
     });
 });

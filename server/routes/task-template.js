@@ -1,5 +1,6 @@
 const express = require('express');
 var router = express.Router();
+var message = require('../helpers/message');
 
 var {
   TaskTemplate
@@ -11,7 +12,7 @@ var {
 
 router.get('/v1/tasks/templates', (req, res) => {
   TaskTemplate.find().then((tasks) => {
-    if (!tasks || tasks.length === 0) {return res.status(400).send({message: 'Geen task templates gevonden'});}
+    if (!tasks || tasks.length === 0) {return res.status(400).send({message: message.noTaskTemplate});}
     return res.status(200).send(tasks);
   });
 });
@@ -19,7 +20,7 @@ router.get('/v1/tasks/templates', (req, res) => {
 router.get('/v1/task/template/:id', (req, res) => {
   var id = req.params.id;
   TaskTemplate.findById(id).then((tasks) => {
-    if (!tasks) {return res.status(400).send({message: 'Geen task template gevonden'});}
+    if (!tasks) {return res.status(400).send({message: message.noTaskTemplate});}
     return res.status(200).send(tasks);
   });
 });
@@ -27,8 +28,8 @@ router.get('/v1/task/template/:id', (req, res) => {
 router.delete('/v1/task/template/:id', (req, res) => {
   var id = req.params.id;
   TaskTemplate.findByIdAndDelete(id).then((tasks) => {
-    if (!tasks) {return res.status(400).send({message: 'Geen task template gevonden'});}
-    return res.status(400).send({message: 'Task template verwijderd'});
+    if (!tasks) {return res.status(400).send({message: message.noTaskTemplate});}
+    return res.status(200).send({message: message.deletedTaskTemplate});
   });
 });
 
@@ -42,9 +43,9 @@ router.post('/v1/task/template/add', (req, res) => {
 
   if (!token) {return res.status(400).send({message: 'Foute login'});}
   User.findOne({token: token}).then((user) => {
-    if (!user || user.type !== 'admin') {return res.status(400).send({message: 'Foute login'});}
+    if (!user || user.type !== 'admin') {return res.status(400).send({message: message.wrongLogin});}
     task.save()
-    .then(() => {return res.status(200).send({message: 'Task template toegevoegd'})});
+    .then(() => {return res.status(200).send({message: message.addedTaskTemplate})});
   });
 });
 
@@ -57,15 +58,15 @@ router.put('/v1/task/template/:id', (req, res) => {
 
   if (!token) {return res.status(400).send({message: 'Foute login'});}
   User.findOne({token: token}).then((user) => {
-    if (!user || user.type !== 'admin') {return res.status(400).send({message: 'Foute login'});}
+    if (!user || user.type !== 'admin') {return res.status(400).send({message: message.wrongLogin});}
   }).then(() => {
     TaskTemplate.findById(id).then((task) => {
-      if (!task) {return res.status(400).send({message: 'Geen reward template gevonden'});}
+      if (!task) {return res.status(400).send({message: message.noTaskTemplate});}
       task.title = title;
       task.points = points;
       task.description = description;
       task.save().then(() => {
-        return res.status(200).send({message: 'Task template geupdate'});
+        return res.status(200).send({message: message.updatedTaskTemplate});
       });
     });
   });
