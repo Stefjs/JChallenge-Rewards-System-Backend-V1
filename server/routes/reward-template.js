@@ -1,6 +1,6 @@
 const express = require('express');
 var router = express.Router();
-var message = require('../helpers/message');
+var m = require('../helpers/message');
 
 var {
   RewardTemplate
@@ -12,7 +12,7 @@ var {
 
 router.get('/v1/rewards/templates', (req, res) => {
   RewardTemplate.find().then((rewards) => {
-    if (!rewards || rewards.length === 0) {return res.status(400).send({message: message.noRewardTemplate});}
+    if (!rewards || rewards.length === 0) {return res.status(400).send({message: m.message.noRewardTemplate});}
     return res.status(200).send(rewards);
   });
 });
@@ -20,7 +20,7 @@ router.get('/v1/rewards/templates', (req, res) => {
 router.get('/v1/reward/template/:id', (req, res) => {
   var id = req.params.id;
   RewardTemplate.findById(id).then((reward) => {
-    if (!reward) {return res.status(400).send({message: message.noRewardTemplate});}
+    if (!reward) {return res.status(400).send({message: m.message.noRewardTemplate});}
     return res.status(200).send(reward);
   });
 });
@@ -28,8 +28,8 @@ router.get('/v1/reward/template/:id', (req, res) => {
 router.delete('/v1/reward/template/:id', (req, res) => {
   var id = req.params.id;
   RewardTemplate.findByIdAndDelete(id).then((reward) => {
-    if (!reward) {return res.status(400).send({message: message.noRewardTemplate});}
-    return res.status(200).send({message: message.deletedRewardTemplate});
+    if (!reward) {return res.status(400).send({message: m.message.noRewardTemplate});}
+    return res.status(200).send({message: m.message.deletedRewardTemplate});
   });
 });
 
@@ -41,11 +41,11 @@ router.post('/v1/reward/template/add', (req, res) => {
     description: req.body.description
   });
 
-  if (!token) {return res.status(400).send({message: message.wrongLogin});}
+  if (!token) {return res.status(400).send({message: m.message.wrongLogin});}
   User.findOne({token: token}).then((user) => {
-    if (!user || user.type !== 'admin') {return res.status(400).send({message: message.wrongLogin});}
+    if (!user || user.type !== 'admin') {return res.status(400).send({message: m.message.wrongLogin});}
     reward.save()
-    .then(() => {return res.status(200).send({message: message.addedRewardTemplate})});
+    .then(() => {return res.status(200).send({message: m.message.addedRewardTemplate})});
   });
 });
 
@@ -56,17 +56,17 @@ router.put('/v1/reward/template/:id', (req, res) => {
   var description = req.body.description;
   var id = req.params.id;
 
-  if (!token) {return res.status(400).send({message: message.wrongLogin});}
+  if (!token) {return res.status(400).send({message: m.message.wrongLogin});}
   User.findOne({token: token}).then((user) => {
-    if (!user || user.type !== 'admin') {return res.status(400).send({message: message.wrongLogin});}
+    if (!user || user.type !== 'admin') {return res.status(400).send({message: m.message.wrongLogin});}
   }).then(() => {
     RewardTemplate.findById(id).then((reward) => {
-      if (!reward) {return res.status(400).send({message: message.noRewardTemplate});}
+      if (!reward) {return res.status(400).send({message: m.message.noRewardTemplate});}
       reward.title = title;
       reward.points = points;
       reward.description = description;
       reward.save().then(() => {
-        return res.status(200).send({message: message.updatedRewardTemplate});
+        return res.status(200).send({message: m.message.updatedRewardTemplate});
       });
     });
   });

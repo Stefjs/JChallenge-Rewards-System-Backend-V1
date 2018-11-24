@@ -1,5 +1,6 @@
 const express = require('express');
 var router = express.Router();
+var m = require('../helpers/message');
 
 var {
   Task
@@ -11,7 +12,7 @@ router.get('/v1/tasks/feed/:limit', (req, res) => {
   if (!parseInt(limit)) {limit = 3;}
   Task.find({accepted: true}).sort({_id: '-1'}).limit(parseInt(limit))
   .then((tasks) => {
-    if (!tasks || tasks.length === 0) {return res.status(400).send({message: message.noTasks});}
+    if (!tasks || tasks.length === 0) {return res.status(400).send({message: m.message.noTasks});}
     return res.status(200).send(tasks);
   });
 });

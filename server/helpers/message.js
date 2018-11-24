@@ -9,8 +9,21 @@ var message = {
     'addedTaskTemplate': 'Task template toegevoegd',
     'updatedTaskTemplate': 'Task template geupdate',
     'noTasks': 'Geen tasks gevonden',
+    'noRewards': 'Geen rewards gevonden',
     'noRewardAdded': 'Reward niet toegevoegd',
-    'notEnoughPoints': '' 
+    'notEnoughPoints': 'Niet genoeg punten', 
+    'addedReward': 'Reward toegevoegd',
+    'addedTask': 'Task toegevoegd',
+    'wrongTaskId': 'Foute taskId',
+    'noRights': 'U bent niet bevoegd om deze actie uit te voeren',
+    'noTaskToAccept': 'Geen task om te accepteren',
+    'taskAccepted': 'Task is geaccepteerd',
+    'wrongRewardId': 'Foute taskId',
+    'noRewardToAccept': 'Geen reward om te accepteren',
+    'rewardAccepted': 'Reward is geaccepteerd',
+    'noTarget': 'Geen target gevonden',
+    'addedTarget': 'Target toegevoegd'
+
 }
 
 module.exports = {
