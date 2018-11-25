@@ -14,7 +14,7 @@ router.get('/v1/rewards/feed/:limit', (req, res) => {
     var allTexts = [];
   
     if (!parseInt(limit)) {limit = 3;}
-    Reward.find({accepted: true}).sort({_id: '-1'}).limit(parseInt(limit))
+    Reward.find({accepted: true}).sort({_id: '1'}).limit(parseInt(limit))
     .then((rewards) => {
       if (!rewards || rewards.length === 0) {return res.status(400).send({message: m.message.noRewards});}
       var counter = 0;
