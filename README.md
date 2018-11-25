@@ -17,3 +17,12 @@ https://documenter.getpostman.com/view/5923294/RzZFCG6b
 
 User
 https://documenter.getpostman.com/view/5923294/RzZFCG6c
+
+User-reward
+https://documenter.getpostman.com/view/5923294/Rzfaqr8k
+
+User-target
+https://documenter.getpostman.com/view/5923294/Rzfaqr8m
+
+User-task
+https://documenter.getpostman.com/view/5923294/Rzfaqr8n
