@@ -23,7 +23,7 @@ router.get('/v1/tasks/feed/:limit', (req, res) => {
         User.findOne({'tasks': task._id}).then((user) => {
           var texts = {text: ''};
           var text = user.name +
-           " heeft de task " +
+           " heeft de opdracht " +
            task.title+
           " voltooid en heeft hiervoor " +
           task.points + " punten gekregen";

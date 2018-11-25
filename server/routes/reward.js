@@ -23,7 +23,7 @@ router.get('/v1/rewards/feed/:limit', (req, res) => {
           User.findOne({'rewards': reward._id}).then((user) => {
             var texts = {text: ''};
             var text = user.name +
-             " heeft de reward " +
+             " heeft " +
              reward.title+
             " ontvangen ";
             texts.text = text;

@@ -40,7 +40,7 @@ router.post('/v1/task/template/add', (req, res) => {
     description: req.body.description
   });
 
-  if (!token) {return res.status(400).send({message: 'Foute login'});}
+  if (!token) {return res.status(400).send({message: m.message.wrongLogin});}
   User.findOne({token: token}).then((user) => {
     if (!user || user.type !== 'admin') {return res.status(400).send({message: m.message.wrongLogin});}
     task.save()
@@ -55,7 +55,7 @@ router.put('/v1/task/template/:id', (req, res) => {
   var description = req.body.description;
   var id = req.params.id;
 
-  if (!token) {return res.status(400).send({message: 'Foute login'});}
+  if (!token) {return res.status(400).send({message: m.message.wrongLogin});}
   User.findOne({token: token}).then((user) => {
     if (!user || user.type !== 'admin') {return res.status(400).send({message: m.message.wrongLogin});}
   }).then(() => {

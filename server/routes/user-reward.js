@@ -19,9 +19,10 @@ router.put('/v1/user/reward/add', (req, res) => {
     var reward = new Reward({
       title: req.body.title,
       points: req.body.points,
-      description: req.body.description
+      description: req.body.description,
+      accepted: true
     });
-  
+
     if (!token) {return res.status(400).send({message: m.message.wrongLogin});}
     reward.save().then((reward) => {
       if (!reward) {return res.status(400).send({message: m.message.noRewardAdded});}
@@ -30,8 +31,9 @@ router.put('/v1/user/reward/add', (req, res) => {
           if (!user) {return res.status(400).send({message: m.message.wrongLogin});}
           if (user.points < reward.points) {return res.status(400).send({message: m.message.notEnoughPoints});}
           user.rewards.push(reward._id);
+          user.points = user.points - reward.points;
           user.save().then(() => {
-          return res.status(200).send({message: m.message.addedReward, rewardId: reward._id});
+          return res.status(200).send({message: m.message.addedReward, rewardId: reward._id, points: user.points});
           })
         })
     })
