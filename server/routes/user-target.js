@@ -33,11 +33,9 @@ router.post('/v1/user/target', (req, res) => {
     RewardTemplate.findById(rewardId)
     .then((target) => {
       if (!target) {return res.status(400).send({message: m.message.noTarget});}
-      console.log(target._id);
       user.target = target._id;
       user.save()
       .then(() => {
-        console.log()
         return res.status(200).send({message: m.message.addedTarget});
       });
     });

@@ -41,7 +41,7 @@ var onStartup = () => {
 }
 
 if(options.clean === true) {
-  console.log('Restoring database')
+  console.log('Restoring database');
   cleaner.cleanDatabase()
   .then(() => filler.fillDatabase())
   .then(() => {

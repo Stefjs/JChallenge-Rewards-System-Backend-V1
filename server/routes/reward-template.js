@@ -20,7 +20,6 @@ router.get('/v1/reward/template/:id', (req, res) => {
   var id = req.params.id;
   RewardTemplate.findById(id).then((reward) => {
     if (!reward) {return res.status(400).send({message: m.message.noRewardTemplate});}
-    console.log(reward);
     return res.status(200).send(reward);
   });
 });
