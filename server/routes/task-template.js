@@ -5,7 +5,6 @@ var m = require('../helpers/message');
 var {
   TaskTemplate
 } = require('../models/task-template');
-
 var {
   User
 } = require('../models/user');

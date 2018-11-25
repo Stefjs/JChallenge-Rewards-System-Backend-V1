@@ -5,7 +5,6 @@ var m = require('../helpers/message');
 var {
   RewardTemplate
 } = require('../models/reward-template');
-
 var {
   User
 } = require('../models/user');

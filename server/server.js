@@ -10,6 +10,9 @@ const taskTemplate = require('./routes/task-template');
 const reward = require('./routes/reward');
 const rewardTemplate = require('./routes/reward-template');
 const user = require('./routes/user');
+const userTask = require('./routes/user-task');
+const userReward = require('./routes/user-reward');
+const userTarget = require('./routes/user-target');
 
 const optionDefinitions = [
   { name: 'clean', alias: 'c', type: Boolean }
@@ -24,7 +27,7 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 app.use(cors());
-app.use(task, taskTemplate, reward, rewardTemplate, user);
+app.use(task, taskTemplate, reward, rewardTemplate, user, userTask, userReward, userTarget);
 
 process.on('uncaughtException', function (err) {
   console.log('Caught exception: ', err);

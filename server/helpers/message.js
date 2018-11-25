@@ -22,7 +22,11 @@ var message = {
     'noRewardToAccept': 'Geen reward om te accepteren',
     'rewardAccepted': 'Reward is geaccepteerd',
     'noTarget': 'Geen target gevonden',
-    'addedTarget': 'Target toegevoegd'
+    'addedTarget': 'Target toegevoegd',
+    'noReward': 'Geen reward gevonden',
+    'rewardRejected': 'Reward is verwijderd',
+    'noTask': 'Geen task gevonden',
+    'taskRejected': 'Task is verwijderd'
 
 }
 
