@@ -21,14 +21,18 @@ router.get('/v1/rewards/feed/:limit', (req, res) => {
       Promise.all(
         rewards.map((reward) => {
           User.findOne({'rewards': reward._id}).then((user) => {
-            var texts = {text: ''};
-            var text = user.name +
-             " heeft " +
-             reward.title+
-            " ontvangen ";
-            texts.text = text;
-            allTexts.push(texts);
-            counter++;
+            if (user) {
+              var texts = {text: ''};
+              var text = user.name +
+               " heeft " +
+               reward.title+
+              " ontvangen ";
+              texts.text = text;
+              allTexts.push(texts);
+              counter++;
+            } else {
+              counter++;
+            }
             if (counter === rewards.length) {return res.status(200).send(allTexts);}
           });
         })

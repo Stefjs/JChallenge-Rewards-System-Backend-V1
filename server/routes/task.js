@@ -21,15 +21,19 @@ router.get('/v1/tasks/feed/:limit', (req, res) => {
     Promise.all(
       tasks.map((task) => {
         User.findOne({'tasks': task._id}).then((user) => {
-          var texts = {text: ''};
-          var text = user.name +
-           " heeft de opdracht " +
-           task.title+
-          " voltooid en heeft hiervoor " +
-          task.points + " punten gekregen";
-          texts.text = text;
-          allTexts.push(texts);
-          counter++;
+          if (user) {
+            var texts = {text: ''};
+            var text = user.name +
+             " heeft de opdracht " +
+             task.title+
+            " voltooid en heeft hiervoor " +
+            task.points + " punten gekregen";
+            texts.text = text;
+            allTexts.push(texts);
+            counter++;
+          } else {
+            counter++;
+          }
           if (counter === tasks.length) {return res.status(200).send(allTexts);}
         });
       })
