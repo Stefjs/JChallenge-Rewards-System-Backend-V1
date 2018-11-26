@@ -19,8 +19,7 @@ router.put('/v1/user/reward/add', (req, res) => {
     var reward = new Reward({
       title: req.body.title,
       points: req.body.points,
-      description: req.body.description,
-      accepted: true
+      description: req.body.description
     });
 
     if (!token) {return res.status(400).send({message: m.message.wrongLogin});}

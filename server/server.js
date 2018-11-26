@@ -51,4 +51,4 @@ if(options.clean === true) {
   return onStartup();
 }
 
-module.exports = router;
+module.exports = app;

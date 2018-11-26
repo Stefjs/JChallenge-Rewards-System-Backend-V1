@@ -53,7 +53,7 @@ router.patch('/v1/user/task/accept', (req, res) => {
           if (!user) {return res.status(400).send({message: m.message.noTaskToaccept});}
           user.points = user.points + task.points;
           user.save()
-          .then(() => {return res.status(400).send({message: m.message.taskAccepted});
+          .then(() => {return res.status(200).send({message: m.message.taskAccepted});
           });
         });
       });
@@ -91,7 +91,7 @@ router.get('/v1/user/tasks', (req, res) => {
     Task.find({'_id': {$in: ids}})
     .then((tasks) => {
       if (!tasks || tasks.length === 0) {return res.status(400).send({message: m.message.noTasks});}
-      {return res.status(400).send(tasks);}
+      {return res.status(200).send(tasks);}
     });
   });
 });

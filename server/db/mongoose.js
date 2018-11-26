@@ -8,6 +8,6 @@ const options = {
   };
 
 mongoose.Promise = global.Promise;
-mongoose.connect(testDatabaseUrl, options);
+mongoose.connect(databaseUrl, options);
 
 module.exports = {mongoose};
